@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/jasonwashburn/go-bookings/pkg/config"
-	"github.com/jasonwashburn/go-bookings/pkg/models"
+	"github.com/jasonwashburn/go-bookings/internal/config"
+	"github.com/jasonwashburn/go-bookings/internal/models"
 	"github.com/justinas/nosurf"
 )
 

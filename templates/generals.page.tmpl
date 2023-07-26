@@ -2,43 +2,43 @@
 
 {{define "content"}}
 <div class="container">
-    <div class="row">
-        <div class="col">
-            <img src="/static/images/generals-quarters.png" class="img-fluid img-thumbnail mx-auto d-block room-image"
-                alt="" />
-        </div>
+  <div class="row">
+    <div class="col">
+      <img src="/static/images/generals-quarters.png" class="img-fluid img-thumbnail mx-auto d-block room-image"
+        alt="" />
     </div>
-    <div class="row">
-        <div class="col">
-            <h1 class="text-center mt-4">General's Quarters</h1>
-            <p>
-                Your home away from home, set on the majestic waters of the Atlantic
-                Ocean, this will be a vacation to remember. Fort Smyth offers
-                luxurious rooms, fine dining, and a host of activities for the whole
-                family. Whether you are looking for a quiet weekend getaway or a
-                fun-filled family vacation, Fort Smyth has it all. Lorem ipsum dolor
-                sit amet consectetur adipisicing elit. Vitae quisquam molestiae
-                sunt, quidem praesentium saepe at velit, ut rerum numquam et magnam
-                deserunt labore, beatae odio? Non necessitatibus amet, quibusdam
-                quidem, voluptatum, voluptate quod quae quia quos doloribus
-                voluptatibus quas. Quisquam, voluptatum. Quisquam, voluptatum.
-            </p>
-        </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <h1 class="text-center mt-4">General's Quarters</h1>
+      <p>
+        Your home away from home, set on the majestic waters of the Atlantic
+        Ocean, this will be a vacation to remember. Fort Smyth offers
+        luxurious rooms, fine dining, and a host of activities for the whole
+        family. Whether you are looking for a quiet weekend getaway or a
+        fun-filled family vacation, Fort Smyth has it all. Lorem ipsum dolor
+        sit amet consectetur adipisicing elit. Vitae quisquam molestiae
+        sunt, quidem praesentium saepe at velit, ut rerum numquam et magnam
+        deserunt labore, beatae odio? Non necessitatibus amet, quibusdam
+        quidem, voluptatum, voluptate quod quae quia quos doloribus
+        voluptatibus quas. Quisquam, voluptatum. Quisquam, voluptatum.
+      </p>
     </div>
-    <div class="row">
-        <div class="col text-center">
-            <a id="check-availability-button" href="#!" class="btn btn-success">
-                Check Availability
-            </a>
-        </div>
+  </div>
+  <div class="row">
+    <div class="col text-center">
+      <a id="check-availability-button" href="#!" class="btn btn-success">
+        Check Availability
+      </a>
     </div>
+  </div>
 </div>
 {{end}}
 
 {{ define "js"}}
 <script>
-    document.getElementById("check-availability-button").addEventListener("click", function () {
-        let html = `
+  document.getElementById("check-availability-button").addEventListener("click", function () {
+    let html = `
         <form id="check-availability-form" action="" method="post" novalidate class="needs-validation">
           <div class="form-row">
             <div class="col">
@@ -54,10 +54,39 @@
           </div>
         </form>
         `
-        attention.custom({
-            msg: html,
-            title: "Choose your dates"
+    attention.custom({
+      msg: html,
+      title: "Choose your dates",
+      willOpen: () => {
+        const elem = document.getElementById('reservation-dates-modal');
+        let rp = new DateRangePicker(elem, {
+          orientation: "top",
+          showOnFocus: true,
+        });
+      },
+      didOpen: () => {
+        document.getElementById("start").removeAttribute("disabled");
+        document.getElementById("end").removeAttribute("disabled");
+      },
+      callback: function (result) {
+        console.log("called");
+
+        let form = document.getElementById("check-availability-form");
+        let formData = new FormData(form);
+        formData.append("csrf_token", "{{.CSRFToken}}");
+
+        fetch("/search-availability-json", {
+          method: "POST",
+          body: formData
         })
-    })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+            console.log(data.ok);
+            console.log(data.message);
+          })
+      }
+    });
+  })
 </script>
 {{end}}

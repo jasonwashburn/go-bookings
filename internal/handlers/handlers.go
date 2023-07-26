@@ -1,12 +1,14 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
-	"github.com/jasonwashburn/go-bookings/pkg/config"
-	"github.com/jasonwashburn/go-bookings/pkg/models"
-	"github.com/jasonwashburn/go-bookings/pkg/render"
+	"github.com/jasonwashburn/go-bookings/internal/config"
+	"github.com/jasonwashburn/go-bookings/internal/models"
+	"github.com/jasonwashburn/go-bookings/internal/render"
 )
 
 // Repo is the repository used by the handlers
@@ -85,6 +87,27 @@ func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
 	end := r.Form.Get("end")
 
 	w.Write([]byte(fmt.Sprintf("Start date is %s and end date is %s", start, end)))
+}
+
+type jsonResponse struct {
+	OK      bool   `json:"ok"`
+	Message string `json:"message"`
+}
+
+// AvailabilityJSON handles request for availability and sends JSON response
+func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
+	resp := jsonResponse{
+		OK:      false,
+		Message: "Available!",
+	}
+
+	out, err := json.MarshalIndent(resp, "", "     ")
+	if err != nil {
+		log.Println(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(out)
 }
 
 // Contact renders the make a reservation page
